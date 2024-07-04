@@ -1,3 +1,5 @@
+using SimpleChat.BL.Extensions;
+
 namespace SimpleChat.API;
 
 public class Program
@@ -7,6 +9,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         
         builder.Services.AddAuthorization();
+
+        builder.Services.AddBusinessLayerServices(builder.Configuration);
         
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
