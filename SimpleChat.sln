@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChat.API", "SimpleChat.API\SimpleChat.API.csproj", "{86A95CF7-1E38-43CA-8BFD-0BE6C2D246CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChat.BL", "SimpleChat.BL\SimpleChat.BL.csproj", "{43EB23F0-A878-47E8-8C60-9C1939EC3DA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleChat.DAL", "SimpleChat.DAL\SimpleChat.DAL.csproj", "{EA903494-F28D-488B-85ED-B3D4CFD9FA3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{86A95CF7-1E38-43CA-8BFD-0BE6C2D246CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A95CF7-1E38-43CA-8BFD-0BE6C2D246CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86A95CF7-1E38-43CA-8BFD-0BE6C2D246CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86A95CF7-1E38-43CA-8BFD-0BE6C2D246CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43EB23F0-A878-47E8-8C60-9C1939EC3DA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43EB23F0-A878-47E8-8C60-9C1939EC3DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43EB23F0-A878-47E8-8C60-9C1939EC3DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43EB23F0-A878-47E8-8C60-9C1939EC3DA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA903494-F28D-488B-85ED-B3D4CFD9FA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA903494-F28D-488B-85ED-B3D4CFD9FA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA903494-F28D-488B-85ED-B3D4CFD9FA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA903494-F28D-488B-85ED-B3D4CFD9FA3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
