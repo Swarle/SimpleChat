@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleChat.DAL.Context;
 
@@ -11,9 +12,11 @@ using SimpleChat.DAL.Context;
 namespace SimpleChat.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20240705175729_AddedConnectionEntity")]
+    partial class AddedConnectionEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace SimpleChat.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Connections");
+                    b.ToTable("Connection");
                 });
 
             modelBuilder.Entity("SimpleChat.DAL.Entities.Conversation", b =>
@@ -54,33 +57,6 @@ namespace SimpleChat.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("SimpleChat.DAL.Entities.Member", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ConversationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserRole")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConversationId");
-
-                    b.HasIndex("UserId", "ConversationId")
-                        .IsUnique();
-
-                    b.ToTable("Member");
                 });
 
             modelBuilder.Entity("SimpleChat.DAL.Entities.Message", b =>
@@ -131,6 +107,33 @@ namespace SimpleChat.DAL.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SimpleChat.DAL.Entities.UserToConversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.HasIndex("UserId", "ConversationId")
+                        .IsUnique();
+
+                    b.ToTable("UserToConversation");
+                });
+
             modelBuilder.Entity("SimpleChat.DAL.Entities.Connection", b =>
                 {
                     b.HasOne("SimpleChat.DAL.Entities.User", "User")
@@ -138,25 +141,6 @@ namespace SimpleChat.DAL.Migrations
                         .HasForeignKey("SimpleChat.DAL.Entities.Connection", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SimpleChat.DAL.Entities.Member", b =>
-                {
-                    b.HasOne("SimpleChat.DAL.Entities.Conversation", "Conversation")
-                        .WithMany("Members")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SimpleChat.DAL.Entities.User", "User")
-                        .WithMany("Conversations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Conversation");
 
                     b.Navigation("User");
                 });
@@ -172,6 +156,25 @@ namespace SimpleChat.DAL.Migrations
                     b.HasOne("SimpleChat.DAL.Entities.User", "User")
                         .WithMany("Messages")
                         .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SimpleChat.DAL.Entities.UserToConversation", b =>
+                {
+                    b.HasOne("SimpleChat.DAL.Entities.Conversation", "Conversation")
+                        .WithMany("Members")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimpleChat.DAL.Entities.User", "User")
+                        .WithMany("Conversations")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

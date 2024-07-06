@@ -4,16 +4,17 @@ using SimpleChat.DAL.Entities;
 
 namespace SimpleChat.DAL.EntityConfigurations;
 
-public class UserToConversationConfiguration : IEntityTypeConfiguration<UserToConversation>
+public class MemberConfiguration : IEntityTypeConfiguration<Member>
 {
-    public void Configure(EntityTypeBuilder<UserToConversation> builder)
+    public void Configure(EntityTypeBuilder<Member> builder)
     {
         builder.HasIndex(e => new { e.UserId, e.ConversationId }).IsUnique();
         
         builder.Property(e => e.UserRole)
+            .HasMaxLength(50)
             .HasConversion(
                 v => v.ToString(),
-                v => (ConversationRole)Enum.Parse(typeof(ConversationRole), v));
+                v => (MemberRole)Enum.Parse(typeof(MemberRole), v));
         
         builder.HasOne(e => e.User)
             .WithMany(e => e.Conversations)

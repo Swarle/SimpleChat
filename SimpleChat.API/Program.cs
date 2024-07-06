@@ -1,19 +1,38 @@
+using Newtonsoft.Json;
+using SimpleChat.API.Extensions;
+using SimpleChat.API.Hubs;
 using SimpleChat.BL.Extensions;
 
 namespace SimpleChat.API;
 
-public class Program
+public static class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddControllers()
+            .AddNewtonsoftJson(opt =>
+                opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+        
+        builder.Services.AddCors(options =>
+            options.AddDefaultPolicy(policy => policy
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .SetIsOriginAllowed(origin => true)
+            ));
+        
+        builder.Services.AddSignalR();
         
         builder.Services.AddAuthorization();
 
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddBusinessLayerServices(builder.Configuration);
         
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGenConfigured();
 
         var app = builder.Build();
         
@@ -23,10 +42,19 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseCors();
+
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
         
-        app.Run();
+        app.MapControllers();
+        app.MapHub<ChatHub>("/kitchen");
+
+        await app.SeedDatabaseAsync();
+
+        app.Lifetime.RegisterCleanupConnections(app);
+        
+        await app.RunAsync();
     }
 }
