@@ -26,7 +26,7 @@ public class ConnectionService : IConnectionService
         _context = accessor.HttpContext;
     }
 
-    public async Task CreateConnection(string connectionId)
+    public async Task CreateConnectionAsync(string connectionId)
     {
         var userId = _context.Request.GetUserIdHeaderOrThrow();
 
@@ -43,7 +43,7 @@ public class ConnectionService : IConnectionService
         await _connectionRepository.SaveChangesAsync();
     }
 
-    public async Task<List<string>> GetConnectionsByConversationId(Guid conversationId)
+    public async Task<List<string>> GetConnectionsByConversationIdAsync(Guid conversationId)
     {
         await _conversationRepository.CheckIfEntityExist(conversationId);
         
@@ -56,7 +56,7 @@ public class ConnectionService : IConnectionService
         return connectionsId;
     }
 
-    public async Task DeleteConnection()
+    public async Task DeleteConnectionAsync()
     {
         var userId = _context.Request.GetUserIdHeaderOrThrow();
         

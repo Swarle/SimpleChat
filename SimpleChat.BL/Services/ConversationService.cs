@@ -25,7 +25,7 @@ public class ConversationService : IConversationService
         _context = accessor.HttpContext;
     }
 
-    public async Task<string> CreateConversation(CreateConversationDto conversationDto)
+    public async Task<string> CreateConversationAsync(CreateConversationDto conversationDto)
     {
         var adminId = _context.Request.GetUserIdHeaderOrThrow();
 
@@ -39,12 +39,12 @@ public class ConversationService : IConversationService
         
         if (conversationDto.MembersId is not null)
         {
-            var userSpecification = new UsersByIdsSpecification(conversationDto.MembersId);
+            var userSpecification = new UserByIdSpecification(conversationDto.MembersId);
 
             var isUsersExist = await _userRepository.AnyAsync(userSpecification);
 
             if (!isUsersExist)
-                throw new HubException("Some of users in member list does not exist");
+                throw new HubOperationException("Some of users in member list does not exist");
             
             members.AddRange(conversationDto.MembersId
                 .Select(memberId => MemberFactory.CreateMember(memberId, conversation.Id)));
@@ -57,6 +57,50 @@ public class ConversationService : IConversationService
 
         var groupName = conversation.Id.ToString();
         
+        return groupName;
+    }
+
+    public async Task<string> JoinToConversationAsync(Guid conversationId)
+    {
+        var userId = _context.Request.GetUserIdHeaderOrThrow();
+
+        var user = await _userRepository.CheckIfEntityExist(userId);
+
+        var conversation = await _conversationRepository.CheckIfEntityExist(conversationId);
+
+        var member = MemberFactory.CreateMember(userId, conversationId);
+        
+        conversation.Members.Add(member);
+        await _conversationRepository.UpdateAsync(conversation);
+
+        await _conversationRepository.SaveChangesAsync();
+
+        var username = user.Name;
+
+        return username;
+    }
+
+    public async Task<string> DeleteConversationAsync(Guid conversationId)
+    {
+        var userId = _context.Request.GetUserIdHeaderOrThrow();
+
+        var userSpecification = new UserByIdSpecification(userId, conversationId);
+
+        var user = await _userRepository.GetFirstOrDefaultAsync(userSpecification) ?? 
+                   throw new HubOperationException("The user with this id either does not exist or is not a member of the group");
+
+        var member = user.Conversations.First(c => c.ConversationId == conversationId);
+
+        if (member.UserRole != MemberRole.Admin)
+            throw new HubOperationException("There are no permissions to do the operation");
+
+        var conversation = member.Conversation;
+
+        await _conversationRepository.DeleteAsync(conversation);
+        await _conversationRepository.SaveChangesAsync();
+
+        var groupName = conversation.Id.ToString();
+
         return groupName;
     }
 

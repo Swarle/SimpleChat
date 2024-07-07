@@ -2,7 +2,7 @@
 
 public interface IConnectionService
 {
-    public Task CreateConnection(string connectionId);
-    public Task<List<string>> GetConnectionsByConversationId(Guid conversationId);
-    public Task DeleteConnection();
+    public Task CreateConnectionAsync(string connectionId);
+    public Task<List<string>> GetConnectionsByConversationIdAsync(Guid conversationId);
+    public Task DeleteConnectionAsync();
 }

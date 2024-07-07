@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SimpleChat.API.Extensions;
+using SimpleChat.API.Filters;
 using SimpleChat.API.Hubs;
 using SimpleChat.BL.Extensions;
 
@@ -23,7 +25,8 @@ public static class Program
                 .SetIsOriginAllowed(origin => true)
             ));
         
-        builder.Services.AddSignalR();
+        builder.Services.AddSignalR(opt =>
+            opt.AddFilter<HubExceptionFilter>());
         
         builder.Services.AddAuthorization();
 

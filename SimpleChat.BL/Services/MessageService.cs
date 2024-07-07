@@ -31,7 +31,7 @@ public class MessageService : IMessageService
         _context = accessor.HttpContext;
     }
 
-    public async Task<MessageDto> CreateMessage(CreateMessageDto createMessageDto)
+    public async Task<MessageDto> CreateMessageAsync(CreateMessageDto createMessageDto)
     {
         var senderId = _context.Request.GetUserIdHeaderOrThrow();
 

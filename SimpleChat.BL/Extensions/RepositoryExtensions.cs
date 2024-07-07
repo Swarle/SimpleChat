@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SimpleChat.BL.Helpers;
 using SimpleChat.DAL.Abstract;
 using SimpleChat.DAL.Entities;
 using SimpleChat.DAL.Repository;
@@ -11,7 +12,7 @@ public static class RepositoryExtensions
         where TEntity : Entity
     {
         var entity = await repository.GetByIdAsync(id) ?? 
-                   throw new HubException($"Entity with type {typeof(TEntity)} and id {id} does not exist");
+                   throw new HubOperationException($"Entity with type {typeof(TEntity)} and id {id} does not exist");
 
         return entity;
     }

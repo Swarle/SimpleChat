@@ -23,16 +23,53 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        await _connectionService.CreateConnection(Context.ConnectionId);
+        await _connectionService.CreateConnectionAsync(Context.ConnectionId);
 
         await ConnectToConversations();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        await _connectionService.DeleteConnection();
+        await _connectionService.DeleteConnectionAsync();
         
         await base.OnDisconnectedAsync(exception);
+    }
+    
+    public async Task SendMessageToGroup(CreateMessageDto createMessageDto)
+    {
+        var message = await _messageService.CreateMessageAsync(createMessageDto);
+        
+        var groupName = message.ReceiverConversationId.ToString();
+
+        await Clients.Groups(groupName).SendAsync(HubMethodNames.NewMessage, message);
+    }
+
+    public async Task JoinToConversation(Guid conversationId)
+    {
+        var username = await _conversationService.JoinToConversationAsync(conversationId);
+
+        var groupName = conversationId.ToString();
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+        await Clients.Groups(groupName)
+            .SendAsync(HubMethodNames.NewMember, $"A User with username {username} joined the group");
+    }
+
+    public async Task DeleteConversation(Guid conversationId)
+    {
+        var connections = await _connectionService.GetConnectionsByConversationIdAsync(conversationId);
+        
+        var groupName = await _conversationService.DeleteConversationAsync(conversationId);
+
+        await DisconnectFromConversation(groupName, connections);
+    }
+    
+    public async Task CreateConversation(CreateConversationDto conversationDto)
+    {
+        var groupName = await _conversationService.CreateConversationAsync(conversationDto);
+
+        await ConnectToConversation(groupName);
     }
 
     private async Task ConnectToConversations()
@@ -44,34 +81,28 @@ public class ChatHub : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
     }
-    
-    public async Task CreateConversation(CreateConversationDto conversationDto)
-    {
-        var groupName = await _conversationService.CreateConversation(conversationDto);
-
-        await ConnectToConversation(groupName);
-    }
 
     private async Task ConnectToConversation(string groupName)
     {
         if (!Guid.TryParse(groupName, out var conversationId))
             throw new HubException("Unable to convert group name to Guid type");
 
-        var connections = await _connectionService.GetConnectionsByConversationId(conversationId);
+        var connections = await _connectionService.GetConnectionsByConversationIdAsync(conversationId);
 
         foreach (var connection in connections)
         {
             await Groups.AddToGroupAsync(connection, groupName);
         }
     }
-    
-    public async Task SendMessageToGroup(CreateMessageDto createMessageDto)
-    {
-        var message = await _messageService.CreateMessage(createMessageDto);
-        
-        var groupName = message.ReceiverConversationId.ToString();
 
-        await Clients.Groups(groupName).SendAsync(HubMethodNames.NewMessage, message);
+    private async Task DisconnectFromConversation(string groupName, List<string> connections)
+    {
+        foreach (var connection in connections)
+        {
+            await Groups.RemoveFromGroupAsync(connection, groupName);
+        }
     }
+    
+
 }
 
