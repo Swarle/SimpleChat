@@ -2,6 +2,7 @@
 
 public class OperationFailedResult
 {
-    public required string ErrorMessage { get; set; }
+    public Dictionary<string, string>? ErrorMessages { get; set; }
+    public string? ErrorMessage { get; set; }
     public required string MethodName { get; set; }
 }

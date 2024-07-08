@@ -33,7 +33,7 @@ public class MessageService : IMessageService
 
     public async Task<MessageDto> CreateMessageAsync(CreateMessageDto createMessageDto)
     {
-        var senderId = _context.Request.GetUserIdHeaderOrThrow();
+        var senderId = _context.Request.GetUserIdOrThrowHubException();
 
         await _conversationRepository.CheckIfEntityExist(createMessageDto.RecipientConversationId);
         await _userRepository.CheckIfEntityExist(senderId);

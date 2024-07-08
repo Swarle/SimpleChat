@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SimpleChat.API.Constants;
+using SimpleChat.API.Extensions;
 using SimpleChat.BL.DTO;
 using SimpleChat.BL.Interfaces;
 
@@ -37,6 +38,8 @@ public class ChatHub : Hub
     
     public async Task SendMessageToGroup(CreateMessageDto createMessageDto)
     {
+        this.ValidateValue(createMessageDto);
+        
         var message = await _messageService.CreateMessageAsync(createMessageDto);
         
         var groupName = message.ReceiverConversationId.ToString();
@@ -67,6 +70,8 @@ public class ChatHub : Hub
     
     public async Task CreateConversation(CreateConversationDto conversationDto)
     {
+        this.ValidateValue(conversationDto);
+        
         var groupName = await _conversationService.CreateConversationAsync(conversationDto);
 
         await ConnectToConversation(groupName);

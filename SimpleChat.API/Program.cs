@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SimpleChat.API.Extensions;
 using SimpleChat.API.Filters;
 using SimpleChat.API.Hubs;
+using SimpleChat.API.Middlewares;
 using SimpleChat.BL.Extensions;
 
 namespace SimpleChat.API;
@@ -46,13 +47,14 @@ public static class Program
         }
 
         app.UseCors();
+        app.UseApiExceptionMiddleware();
 
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
         
         app.MapControllers();
-        app.MapHub<ChatHub>("/kitchen");
+        app.MapHub<ChatHub>("/hubs/chat");
 
         await app.SeedDatabaseAsync();
 

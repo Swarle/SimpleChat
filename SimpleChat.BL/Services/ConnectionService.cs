@@ -28,7 +28,7 @@ public class ConnectionService : IConnectionService
 
     public async Task CreateConnectionAsync(string connectionId)
     {
-        var userId = _context.Request.GetUserIdHeaderOrThrow();
+        var userId = _context.Request.GetUserIdOrThrowHubException();
 
         await _userRepository.CheckIfEntityExist(userId);
 
@@ -58,7 +58,7 @@ public class ConnectionService : IConnectionService
 
     public async Task DeleteConnectionAsync()
     {
-        var userId = _context.Request.GetUserIdHeaderOrThrow();
+        var userId = _context.Request.GetUserIdOrThrowHubException();
         
         await _userRepository.CheckIfEntityExist(userId);
 

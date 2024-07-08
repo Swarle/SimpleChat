@@ -4,10 +4,11 @@ namespace SimpleChat.BL.Helpers;
 
 public static class ConversationFactory
 {
-    public static Conversation CreateConversation(string title) =>
+    public static Conversation CreateConversation(string title, string tag) =>
         new Conversation
         {
             Id = Guid.NewGuid(),
-            Title = title
+            Title = title,
+            Tag = tag,
         };
 }

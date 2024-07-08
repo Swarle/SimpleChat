@@ -15,12 +15,20 @@ public class HubExceptionFilter : IHubFilter
         }
         catch (HubOperationException ex)
         {
-            var errorResponse = new OperationFailedResult { ErrorMessage = ex.Message,
-                MethodName = invocationContext.HubMethodName};
-            
+            var errorResponse = new OperationFailedResult{ MethodName = invocationContext.HubMethodName };
+
+            if (ex.ErrorMessages is null)
+                errorResponse.ErrorMessage = ex.Message;
+            else
+                errorResponse.ErrorMessages = ex.ErrorMessages; 
+
             await invocationContext.Hub.Clients.Caller.SendAsync(HubMethodNames.Error, errorResponse);
 
             return errorResponse;
+        }
+        catch (Exception ex)
+        {
+            throw new HubException(ex.Message);
         }
     }
 }
