@@ -1,0 +1,5 @@
+﻿{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=SimpleChat_Test;Trusted_Connection=True;MultipleActiveResultSets=True"
+  }
+}

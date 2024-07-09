@@ -75,6 +75,9 @@ public class ConversationHub : Hub
         var groupName = await _conversationService.CreateConversationAsync(conversationDto);
 
         await ConnectToConversation(groupName);
+
+        await Clients.Groups(groupName)
+            .SendAsync(HubMethodNames.NewConversationCreated, "Was created new conversation");
     }
 
     private async Task ConnectToConversations()
