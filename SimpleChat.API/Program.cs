@@ -54,7 +54,7 @@ public static class Program
         app.UseAuthorization();
         
         app.MapControllers();
-        app.MapHub<ChatHub>("/hubs/chat");
+        app.MapHub<ConversationHub>("/hubs/chat");
 
         await app.SeedDatabaseAsync();
 

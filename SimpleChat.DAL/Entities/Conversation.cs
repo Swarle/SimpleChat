@@ -1,4 +1,5 @@
-﻿using SimpleChat.DAL.Abstract;
+﻿using System.Diagnostics.CodeAnalysis;
+using SimpleChat.DAL.Abstract;
 
 namespace SimpleChat.DAL.Entities;
 

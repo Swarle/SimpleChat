@@ -36,7 +36,7 @@ public class ConversationService : IConversationService
     {
         var adminId = _context.Request.GetUserIdOrThrowHubException();
 
-        await _userRepository.CheckIfEntityExist(adminId);
+        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(adminId);
 
         var conversationSpecification = new ConversationByTagSpecification(conversationDto.Tag);
 
@@ -78,15 +78,15 @@ public class ConversationService : IConversationService
     {
         var userId = _context.Request.GetUserIdOrThrowHubException();
 
-        var user = await _userRepository.CheckIfEntityExist(userId);
+        var user = await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(userId);
 
-        var conversation = await _conversationRepository.CheckIfEntityExist(conversationId);
+        var conversation = await _conversationRepository.GetByIdOrThrowHubOperationExceptionAsync(conversationId);
 
         var member = MemberFactory.CreateMember(userId, conversationId);
         
         conversation.Members.Add(member);
+        
         await _conversationRepository.UpdateAsync(conversation);
-
         await _conversationRepository.SaveChangesAsync();
 
         var username = user.Name;
@@ -98,17 +98,20 @@ public class ConversationService : IConversationService
     {
         var userId = _context.Request.GetUserIdOrThrowHubException();
 
-        var userSpecification = new UserByIdSpecification(userId, conversationId);
+        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(userId);
 
-        var user = await _userRepository.GetFirstOrDefaultAsync(userSpecification) ?? 
-                   throw new HubOperationException("The user with this id either does not exist or is not a member of the group");
+        var conversationSpecification = new ConversationWithMembersSpecification(conversationId, userId);
 
-        var member = user.Conversations.First(c => c.ConversationId == conversationId);
+        var conversation = await _conversationRepository.GetFirstOrDefaultAsync(conversationSpecification) ??
+                           throw new HubOperationException("Conversation with given id does not exist");
+
+        var member = conversation.Members.FirstOrDefault();
+
+        if (member is null)
+            throw new HubOperationException("The user is not a member of this group");
 
         if (member.UserRole != MemberRole.Admin)
             throw new HubOperationException("There are no permissions to do the operation");
-
-        var conversation = member.Conversation;
 
         await _conversationRepository.DeleteAsync(conversation);
         await _conversationRepository.SaveChangesAsync();
@@ -150,18 +153,22 @@ public class ConversationService : IConversationService
             return;
         
         var userId = _context.Request.GetUserIdOrThrowHttpException();
-
-        var userSpecification = new UserByIdSpecification(userId, updateConversationDto.Id);
-
-        var user = await _userRepository.GetFirstOrDefaultAsync(userSpecification, cancellationToken) ??
-                   throw new HttpException(HttpStatusCode.NotFound, "User not found");
         
-        var member = user.Conversations.First(c => c.ConversationId == updateConversationDto.Id);
+        var user = await _userRepository.GetByIdAsync(userId, cancellationToken) ??
+                throw new HttpException(HttpStatusCode.Unauthorized, "User with given id does not exist");
 
+        var conversationSpecification = new ConversationWithMembersSpecification(updateConversationDto.Id, userId);
+
+        var conversation = await _conversationRepository.GetFirstOrDefaultAsync(conversationSpecification, cancellationToken) ??
+                           throw new HttpException(HttpStatusCode.NotFound, "Conversation with given id does not exist");
+
+        var member = conversation.Members.FirstOrDefault();
+
+        if (member is null)
+            throw new HttpException(HttpStatusCode.Forbidden, "The user is not a member of this group");
+        
         if (member.UserRole != MemberRole.Admin)
             throw new HttpException(HttpStatusCode.Forbidden, "You do not have admin privileges to edit this conversation");
-
-        var conversation = member.Conversation;
 
         conversation = _mapper.Map(updateConversationDto, conversation);
 
@@ -173,7 +180,7 @@ public class ConversationService : IConversationService
     {
         var userId = _context.Request.GetUserIdOrThrowHubException();
 
-        await _userRepository.CheckIfEntityExist(userId);
+        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(userId);
         
         var conversationSpecification = new ConversationByUserIdSpecification(userId);
 

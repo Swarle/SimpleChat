@@ -7,13 +7,13 @@ using SimpleChat.BL.Interfaces;
 
 namespace SimpleChat.API.Hubs;
 
-public class ChatHub : Hub
+public class ConversationHub : Hub
 {
     private readonly IConversationService _conversationService;
     private readonly IConnectionService _connectionService;
     private readonly IMessageService _messageService;
     
-    public ChatHub(IConversationService conversationService,
+    public ConversationHub(IConversationService conversationService,
         IConnectionService connectionService,
         IMessageService messageService)
     {

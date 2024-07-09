@@ -35,8 +35,8 @@ public class MessageService : IMessageService
     {
         var senderId = _context.Request.GetUserIdOrThrowHubException();
 
-        await _conversationRepository.CheckIfEntityExist(createMessageDto.RecipientConversationId);
-        await _userRepository.CheckIfEntityExist(senderId);
+        await _conversationRepository.GetByIdOrThrowHubOperationExceptionAsync(createMessageDto.RecipientConversationId);
+        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(senderId);
 
         var message = MessageFactory.CreateMessage(createMessageDto, senderId);
 

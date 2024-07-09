@@ -30,7 +30,7 @@ public class ConnectionService : IConnectionService
     {
         var userId = _context.Request.GetUserIdOrThrowHubException();
 
-        await _userRepository.CheckIfEntityExist(userId);
+        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(userId);
 
         var connection = await _connectionRepository.GetByIdAsync(userId);
 
@@ -45,7 +45,7 @@ public class ConnectionService : IConnectionService
 
     public async Task<List<string>> GetConnectionsByConversationIdAsync(Guid conversationId)
     {
-        await _conversationRepository.CheckIfEntityExist(conversationId);
+        await _conversationRepository.GetByIdOrThrowHubOperationExceptionAsync(conversationId);
         
         var connectionSpecification = new ConnectionByConversationIdSpecification(conversationId);
 
@@ -60,7 +60,7 @@ public class ConnectionService : IConnectionService
     {
         var userId = _context.Request.GetUserIdOrThrowHubException();
         
-        await _userRepository.CheckIfEntityExist(userId);
+        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(userId);
 
         var connection = await _connectionRepository.GetByIdAsync(userId) ??
                          throw new HubException("Connection with requested user id does not exist");
