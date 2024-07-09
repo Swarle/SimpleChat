@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using SimpleChat.BL.Extensions;
+using SimpleChat.BL.Helpers;
 using SimpleChat.BL.Interfaces;
 using SimpleChat.DAL.Entities;
 using SimpleChat.DAL.Repository;
@@ -30,7 +31,8 @@ public class ConnectionService : IConnectionService
     {
         var userId = _context.Request.GetUserIdOrThrowHubException();
 
-        await _userRepository.GetByIdOrThrowHubOperationExceptionAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId) ??
+            throw new HubException("User with given id does not exist");
 
         var connection = await _connectionRepository.GetByIdAsync(userId);
 

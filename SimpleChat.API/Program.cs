@@ -8,7 +8,7 @@ using SimpleChat.BL.Extensions;
 
 namespace SimpleChat.API;
 
-public static class Program
+public class Program
 {
     public static async Task Main(string[] args)
     {
